@@ -1,0 +1,434 @@
+#region VEXcode Generated Robot Configuration
+from vex import *
+import urandom
+
+# Brain should be defined by default
+brain=Brain()
+
+# Robot configuration code
+brain_inertial = Inertial()
+controller = Controller()
+motor_left = Motor(Ports.PORT1, False)
+motor_right = Motor(Ports.PORT6, True)
+motor_spin = Motor(Ports.PORT2, True)
+motor_shoot = Motor(Ports.PORT3, False)
+motor_middle = Motor(Ports.PORT5, False)
+elevator = Motor(Ports.PORT4, False)
+#endregion VEXcode Generated Robot Configuration
+
+# ------------------------------------------
+
+# Project: VEXcode Project
+# Author: Rawi N
+# Created: 22/1/2023
+# Description: VEXcode.py
+
+# ------------------------------------------
+
+
+
+ 
+
+
+# ▀█░█▀ █▀▀█ █░░ █░░█ █▀▀█ █▀▀▄ █░░ █▀▀ 
+# ░█▄█░ █▄▄█ █░░ █░░█ █▄▄█ █▀▀▄ █░░ █▀▀ 
+# ░░▀░░ ▀░░▀ ▀▀▀ ░▀▀▀ ▀░░▀ ▀▀▀░ ▀▀▀ ▀▀▀
+
+# ------------------------------------
+x=1
+detect = 0
+motor4speed = 100
+liftspeed = 100
+elevatordegrees = 170
+non = 0
+shoot = 0
+placeholder = 0
+changemode = 0
+
+
+
+from vex import *
+import time 
+
+
+
+# █▀▀ █▀▀ ▀▀█▀▀ █░░█ █▀▀█ 
+# ▀▀█ █▀▀ ░░█░░ █░░█ █░░█ 
+# ▀▀▀ ▀▀▀ ░░▀░░ ░▀▀▀ █▀▀▀
+
+
+motor_spin.set_velocity(motor4speed, PERCENT)
+brain_inertial.set_heading(0, DEGREES)
+motor_middle.set_position(0,DEGREES)
+motor_middle.set_position(0,DEGREES)
+brain_inertial.set_heading(0, DEGREES)
+brain_inertial.set_rotation(0, DEGREES)
+
+
+
+# █▀▀▄ █▀▀█ ░▀░ ▀█░█▀ ░▀░ █▀▀▄ █▀▀▀ 　 █▀▀▄ █▀▀ █▀▀ 
+# █░░█ █▄▄▀ ▀█▀ ░█▄█░ ▀█▀ █░░█ █░▀█ 　 █░░█ █▀▀ █▀▀ 
+# ▀▀▀░ ▀░▀▀ ▀▀▀ ░░▀░░ ▀▀▀ ▀░░▀ ▀▀▀▀ 　 ▀▀▀░ ▀▀▀ ▀░░
+
+
+
+#left and right
+def drive(lspeed, rspeed):
+    motor_left.set_velocity(lspeed,PERCENT)
+    motor_right.set_velocity(rspeed,PERCENT)
+
+
+#backward new
+def backcount():
+    motor_left.set_position(0,DEGREES)
+    motor_right.set_position(0,DEGREES)
+    while (controller.axisA.position()<-10):
+        A = controller.axisA.position()
+        left = motor_left.position(DEGREES)
+        right = motor_right.position(DEGREES)
+        mo = left-right
+        if mo>2:
+            motor_left.set_velocity(A,PERCENT) 
+            motor_right.set_velocity(A-5,PERCENT)      #left over
+
+
+        elif mo<2:
+            motor_left.set_velocity(A-5,PERCENT) 
+            motor_right.set_velocity(A,PERCENT)            #right over
+
+
+        else:
+            print("baclkcount")
+            motor_left.set_velocity(A,PERCENT)
+            motor_right.set_velocity(A,PERCENT)
+
+        motor_left.spin(FORWARD)
+        motor_right.spin(FORWARD)
+
+
+#forward new
+def drivefrontcount(degree):
+    left = motor_left.position(DEGREES)
+    right = motor_right.position(DEGREES)
+    
+    A = 80
+    motor_left.set_position(0,DEGREES)
+    motor_right.set_position(0,DEGREES)
+    left = motor_left.position(DEGREES)
+    right = motor_right.position(DEGREES)
+    mo = left-right
+    if mo>2:
+        motor_left.set_velocity(A-5,PERCENT) 
+        motor_right.set_velocity(A,PERCENT)      #left over
+
+
+    elif mo<2:
+        motor_left.set_velocity(A,PERCENT) 
+        motor_right.set_velocity(A-5,PERCENT)            #right over
+
+
+    else:
+        print("forwardnew")
+        motor_left.set_velocity(A,PERCENT)
+        motor_right.set_velocity(A,PERCENT)
+
+    motor_left.spin(FORWARD)
+    motor_right.spin(FORWARD)
+        
+
+
+# gyro forward
+
+
+motor_left.set_velocity(100,PERCENT)
+motor_right.set_velocity(100,PERCENT)
+def forward(amt):
+    stdb = brain_inertial.rotation()
+    motor_left.set_position(0, DEGREES)
+    while motor_left.position(DEGREES) <= amt:
+       
+        db = brain_inertial.rotation()-stdb
+        print(db)
+        # time.sleep(0.10)
+
+        
+        if db <= -4:
+            motor_left.set_velocity(100,PERCENT)
+            motor_right.set_velocity(95,PERCENT)
+            motor_left.spin(FORWARD)
+            motor_right.spin(FORWARD)
+            ### left ####
+        elif db >= 4:
+            motor_left.set_velocity(95,PERCENT)
+            motor_right.set_velocity(100,PERCENT)
+            motor_left.spin(FORWARD)
+            motor_right.spin(FORWARD)
+            ### right ####
+        
+        else:
+            motor_left.set_velocity(100,PERCENT)
+            motor_right.set_velocity(100,PERCENT)
+            motor_left.spin(FORWARD)
+            motor_right.spin(FORWARD)
+        
+
+
+    motor_left.stop()
+    motor_right.stop()
+
+
+
+#backward gyro
+def DriveBackward(amt):
+    GR_forDrive = brain_inertial.rotation()
+    motor_left.set_position(0, DEGREES)
+    while motor_left.position(DEGREES) >= amt*-1:
+        rotat = brain_inertial.rotation()
+        print(motor_left.position(DEGREES))
+
+        print(GR_forDrive-rotat)
+        
+        A = -100
+        if(rotat-GR_forDrive>3): #RIGHT
+            motor_left.set_velocity(A/2,PERCENT)
+            motor_right.set_velocity(A/3,PERCENT)
+        elif(rotat-GR_forDrive<-3): #LEFT
+            motor_left.set_velocity(A/3,PERCENT)
+            motor_right.set_velocity(A/2,PERCENT)
+        else:
+            motor_left.set_velocity(A/1.2,PERCENT)
+            motor_right.set_velocity(A/1.2,PERCENT)
+
+        motor_left.spin(FORWARD)
+        motor_right.spin(FORWARD)
+    motor_left.stop()
+    motor_right.stop()
+
+
+
+def rotate(ang):
+    stdb = brain_inertial.rotation()
+    db = brain_inertial.rotation()-stdb
+    print(db)
+    while db <= ang:
+        db = brain_inertial.rotation()-stdb
+        print(db)
+        motor_left.set_velocity(50,PERCENT)
+        motor_right.set_velocity(-50,PERCENT)
+        motor_left.spin(FORWARD)
+        motor_right.spin(FORWARD) 
+
+    motor_left.stop()
+    motor_right.stop()
+       
+def rotateleft(ang):
+    stdb = brain_inertial.rotation()
+    db = brain_inertial.rotation()-stdb
+    print(db)
+    while db >= ang:
+        db = brain_inertial.rotation()-stdb
+        print(db)
+        motor_right.set_velocity(50,PERCENT)
+        motor_left.set_velocity(-50,PERCENT)
+        motor_left.spin(FORWARD)
+        motor_right.spin(FORWARD) 
+
+    motor_left.stop()
+    motor_right.stop()
+    motor_left.stop()
+    motor_right.stop()
+
+
+
+# █▀▄▀█ █▀▀█ ░▀░ █▀▀▄ 　 █▀▀ █▀▀█ █▀▀▄ █▀▀ 
+# █░▀░█ █▄▄█ ▀█▀ █░░█ 　 █░░ █░░█ █░░█ █▀▀ 
+# ▀░░░▀ ▀░░▀ ▀▀▀ ▀░░▀ 　 ▀▀▀ ▀▀▀▀ ▀▀▀░ ▀▀▀
+
+def main():
+    
+    
+    motor_middle.set_velocity(100, PERCENT)
+    motor_middle.spin_to_position(176,DEGREES,wait=True)
+        
+    forward(970)
+
+    time.sleep(1)
+    #lazy lol
+    motor_middle.spin_to_position(107,DEGREES,wait=True)
+    motor_left.spin(REVERSE)
+    motor_right.spin(REVERSE)
+    time.sleep(0.2)
+    motor_left.stop()
+    motor_right.stop()
+
+
+    motor_middle.spin_to_position(180,DEGREES,wait=True)
+   
+    DriveBackward(100)
+    spinpurple()
+    motor_middle.set_velocity(100,PERCENT)
+    motor_middle.spin_to_position(-30,DEGREES,wait=True)
+    time.sleep(0.5)
+    motor_middle.spin_to_position(0,DEGREES,wait=True)
+    
+    rotateleft(-100)
+    DriveBackward(100)
+    # forward(700)
+    # rotateleft(-40)
+
+    # DriveBackward(400)
+
+    
+    
+
+       
+   
+            
+           
+            
+       
+
+# ░█████╗░██████╗░██████╗░░░░░░░░█████╗░███╗░░██╗  ███╗░░░███╗░█████╗░████████╗░█████╗░██████╗░
+# ██╔══██╗██╔══██╗██╔══██╗░░░░░░██╔══██╗████╗░██║  ████╗░████║██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗
+# ███████║██║░░██║██║░░██║█████╗██║░░██║██╔██╗██║  ██╔████╔██║██║░░██║░░░██║░░░██║░░██║██████╔╝
+# ██╔══██║██║░░██║██║░░██║╚════╝██║░░██║██║╚████║  ██║╚██╔╝██║██║░░██║░░░██║░░░██║░░██║██╔══██╗
+# ██║░░██║██████╔╝██████╔╝░░░░░░╚█████╔╝██║░╚███║  ██║░╚═╝░██║╚█████╔╝░░░██║░░░╚█████╔╝██║░░██║
+# ╚═╝░░╚═╝╚═════╝░╚═════╝░░░░░░░░╚════╝░╚═╝░░╚══╝  ╚═╝░░░░░╚═╝░╚════╝░░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝
+
+
+
+# █▀█ █░█ █▀█ █▀█ █░░ █▀▀
+# █▀▀ █▄█ █▀▄ █▀▀ █▄▄ ██▄
+
+def spinpurple():
+    motor_spin.set_velocity(100,PERCENT)
+    motor_spin.spin(REVERSE)
+   
+
+
+def stopspin():
+    motor_spin.stop()
+
+        
+            
+
+# █▀ █░█ █▀█ █▀█ ▀█▀ █▀▀ █▀█
+# ▄█ █▀█ █▄█ █▄█ ░█░ ██▄ █▀▄
+
+def shot():
+
+    if controller.buttonRUp.pressing():
+        global shoot
+      
+        if shoot %2 == 1:
+            motor_shoot.set_velocity(2,PERCENT)
+            motor_shoot.spin(REVERSE)
+            print(shoot)
+            while controller.buttonRUp.pressing(): 
+                pass
+            
+            
+                
+        else:
+            motor_shoot.set_velocity(100,PERCENT)
+            motor_shoot.spin(FORWARD)
+            print(shoot)
+            while controller.buttonRUp.pressing(): 
+                pass
+            
+       
+        shoot = shoot + 1
+
+
+# █▄▄ █░░ █░█ █▀▀ ▄▄ █░░ █ █▀▀ ▀█▀
+# █▄█ █▄▄ █▄█ ██▄ ░░ █▄▄ █ █▀░ ░█░
+
+def lift():
+    data = elevator.position(DEGREES)
+    print(data)
+    elevator.set_velocity(100,PERCENT)
+    #touch down
+    if controller.buttonL3.pressing():
+       elevator.spin(FORWARD)
+
+                
+
+    else:
+
+        if controller.buttonEUp.pressing():
+            if data >= 90:
+                elevator.set_stopping(HOLD)
+                elevator.stop()
+                
+            else:
+                elevator.spin(FORWARD)
+            #elevator up ปุ่มกดนำลิฟท์ขึ้น
+
+     
+                # elevator.spin_for(REVERSE,elevatordegrees, DEGREES)
+
+        elif controller.buttonEDown.pressing():
+            if data <= 0:
+                elevator.set_stopping(HOLD)
+                elevator.stop()
+
+            else:
+                elevator.spin(REVERSE)
+            #elevator down ปุ่มกดนำลิฟท์ลง
+        
+       
+            # elevator.spin_for(FORWARD,elevatordegrees+1, DEGREES)
+
+        else:
+            #stop # ไม่ต้องสนใจ
+            elevator.set_stopping(HOLD)
+            elevator.stop();
+
+
+
+# █▄█ █▀▀ █░░ █░░ █▀█ █░█░█ ▄▄ █░░ █ █▀▀ ▀█▀
+# ░█░ ██▄ █▄▄ █▄▄ █▄█ ▀▄▀▄▀ ░░ █▄▄ █ █▀░ ░█░
+
+def yellow():
+
+    midsta = motor_middle.position(DEGREES)
+    print(midsta)
+    if controller.buttonLUp.pressing():
+        motor_middle.set_velocity(100, PERCENT)
+        motor_middle.spin_to_position(176,DEGREES,wait=True)
+        
+
+    elif controller.buttonFDown.pressing():
+
+        
+    
+        #yellow collect up ปุ่มกดเพื่องัด สีเหลือง
+        motor_middle.set_velocity(80, PERCENT)
+        motor_middle.spin(FORWARD)
+
+    elif controller.buttonFUp.pressing():
+
+
+        #yellow collect don ปุ่มกดเพื่อไม่งัดสีเหลือง
+        motor_middle.set_velocity(80, PERCENT)
+        motor_middle.spin(REVERSE)
+
+    else:
+        
+        motor_middle.set_stopping(HOLD)
+        motor_middle.stop();
+
+
+    
+ 
+    
+
+    
+
+
+
+#Start Program
+
+
+  
+main()
