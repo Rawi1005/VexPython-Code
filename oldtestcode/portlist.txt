@@ -1,0 +1,15 @@
+Port List
+
+Motor Left  Port 12
+Motor Right Port 6
+Motor Spin (For Purple) Port 4
+Motor Elevator (For Blue) Port 10
+Motor
+
+
+
+
+สีขาว 11-12
+สีดำ2-3
+สีขาวรูดำ1-2
+สีดำมีรู9-10
